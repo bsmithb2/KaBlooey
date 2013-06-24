@@ -1,8 +1,6 @@
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-namespace KaBlooey
+
+namespace KaBlooey.Engine
 {
 	class MainClass
 	{
@@ -11,5 +9,4 @@ namespace KaBlooey
 			Console.WriteLine ("Hello World!");
 		}
 	}
-
 }
