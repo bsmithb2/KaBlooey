@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaBlooey.Console", "KaBlooey.Console.csproj", "{AAF26A64-7901-4342-BE20-095BD59DB109}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaBlooey.UnitTests", "..\tests\KaBlooey.UnitTests\KaBlooey.UnitTests.csproj", "{7F74DDBC-EC8A-403E-92B3-7D9FF8110361}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaBlooey.Engine", "KaBlooey.Engine\KaBlooey.Engine.csproj", "{E0BE44AF-93D7-47AC-ABB9-6723427D3345}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F74DDBC-EC8A-403E-92B3-7D9FF8110361}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7F74DDBC-EC8A-403E-92B3-7D9FF8110361}.Debug|x86.Build.0 = Debug|Any CPU
+		{7F74DDBC-EC8A-403E-92B3-7D9FF8110361}.Release|x86.ActiveCfg = Release|Any CPU
+		{7F74DDBC-EC8A-403E-92B3-7D9FF8110361}.Release|x86.Build.0 = Release|Any CPU
+		{AAF26A64-7901-4342-BE20-095BD59DB109}.Debug|x86.ActiveCfg = Debug|x86
+		{AAF26A64-7901-4342-BE20-095BD59DB109}.Debug|x86.Build.0 = Debug|x86
+		{AAF26A64-7901-4342-BE20-095BD59DB109}.Release|x86.ActiveCfg = Release|x86
+		{AAF26A64-7901-4342-BE20-095BD59DB109}.Release|x86.Build.0 = Release|x86
+		{E0BE44AF-93D7-47AC-ABB9-6723427D3345}.Debug|x86.ActiveCfg = Debug|x86
+		{E0BE44AF-93D7-47AC-ABB9-6723427D3345}.Debug|x86.Build.0 = Debug|x86
+		{E0BE44AF-93D7-47AC-ABB9-6723427D3345}.Release|x86.ActiveCfg = Release|x86
+		{E0BE44AF-93D7-47AC-ABB9-6723427D3345}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = ..\tests\KaBlooey.UnitTests\KaBlooey.UnitTests.csproj
+	EndGlobalSection
+EndGlobal
