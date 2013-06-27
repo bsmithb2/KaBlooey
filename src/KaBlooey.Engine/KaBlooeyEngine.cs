@@ -2,6 +2,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using BsDiff;
+
 namespace KaBlooey
 {
     /// <summary>
@@ -79,15 +81,22 @@ namespace KaBlooey
                 var relativePath = GetRelativePath(newFolderLocation, file);
 
                 var oldFolderPath = Path.Combine(oldFolderLocation, relativePath);
+                var patchFilePath = Path.Combine(patchLocation, relativePath);
+                var patchFolderPath = Path.GetDirectoryName(patchFilePath);
+                if (!Directory.Exists(patchFolderPath))
+                {
+                    Directory.CreateDirectory(patchFolderPath);
+                }
                 if (!File.Exists(oldFolderPath))
                 {
-                    var patchFilePath = Path.Combine(patchLocation, relativePath + ".add");
-                    var patchFolderPath = Path.GetDirectoryName(patchFilePath);
-                    if (!Directory.Exists(patchFolderPath))
-                    {
-                        Directory.CreateDirectory(patchFolderPath);
-                    }
-                    File.Copy(file, patchFilePath);
+                    // file missing, add it
+                    File.Copy(file, patchFilePath + ".add");
+                }
+                else
+                {
+                    // file exists - take a diff
+                    using (FileStream output = new FileStream(patchFilePath + ".changed", FileMode.Create))
+						BinaryPatchUtility.Create(File.ReadAllBytes(oldFolderPath), File.ReadAllBytes(file), output);
                 }
             }
 

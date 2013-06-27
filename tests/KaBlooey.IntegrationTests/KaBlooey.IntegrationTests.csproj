@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="KaBlooeyChangedFileTests.cs" />
     <Compile Include="KaBlooeyDeleteTests.cs" />
+    <Compile Include="KaBlooeyIntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="KaBlooeyAddTests.cs" />
   </ItemGroup>
