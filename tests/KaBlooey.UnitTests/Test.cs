@@ -9,7 +9,7 @@ namespace KaBlooey.UnitTests
 		[Test()]
 		public void TestCase ()
 		{
-			Assert.Fail ();
+			Assert.Pass ();
 		}
 	}
 }
