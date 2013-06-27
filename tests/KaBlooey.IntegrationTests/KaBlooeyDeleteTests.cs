@@ -46,14 +46,4 @@ namespace KaBlooey.IntegrationTests
 
         }
     }
-
-    [TestFixture]
-    public class ChangedFileTests
-    {
-        [Test]
-        public void WhenIChangeAFileInTheNewDirectory_ItShouldBeDeltaDiffed()
-        {
-            
-        }
-    }
 }
