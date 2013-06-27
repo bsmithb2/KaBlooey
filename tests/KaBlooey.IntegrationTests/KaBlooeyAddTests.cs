@@ -10,79 +10,76 @@ using KaBlooey;
 namespace KaBlooey.IntegrationTests
 {
     [TestFixture]
-    public class KaBlooeyAddTests
+    public class KaBlooeyAddTests : KaBlooeyIntegrationTests
     {
         [Test]
         public void WhenIAddAFile_FileShouldBeAddedToPatchFolderWithAddExtension()
         {
-            string rootPath = "c:\\patch";
-            string oldFolder = rootPath + "\\old";
-            string newFolder = rootPath + "\\new";
-            string patchFolder = rootPath + "\\patch";
-
-            ClearFolders(oldFolder, newFolder, patchFolder);
-            AddFileToFolder(newFolder, "addFile.txt");
-
-            KaBlooey.KaBlooeyEngine.CreatePatch(oldFolder, newFolder, patchFolder);
-            var result = File.Exists(Path.Combine(patchFolder, "addFile.txt.add"));
+            ClearFolders(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
+            AddFileToFolder(_newFolderLocation, "addFile.txt");
+            Directory.CreateDirectory(_oldFolderLocation);
+            KaBlooey.KaBlooeyEngine.CreatePatch(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
+            var result = File.Exists(Path.Combine(_patchFolderLocation, "addFile.txt.add"));
             Assert.AreEqual(true, result);
         }
 
         [Test]
         public void WhenIAddAFileToAChildFolder_FileShouldBeAddedToPatchChildFolderWithAddExtension()
         {
-            string rootPath = "c:\\patch";
             string childFolder = "child\\";
-            string oldFolder = rootPath + "\\old";
-            string newFolder = rootPath + "\\new";
-            string patchFolder = rootPath + "\\patch";
-
-            ClearFolders(oldFolder, newFolder, patchFolder);
-            AddFileToFolder(Path.Combine(newFolder, childFolder), "addFile.txt");
-
-            KaBlooey.KaBlooeyEngine.CreatePatch(oldFolder, newFolder, patchFolder);
-            var result = File.Exists(Path.Combine(patchFolder, Path.Combine(childFolder, "addFile.txt.add")));
+            
+            ClearFolders(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
+            AddFileToFolder(Path.Combine(_newFolderLocation, childFolder), "addFile.txt");
+            Directory.CreateDirectory(_oldFolderLocation);
+            KaBlooey.KaBlooeyEngine.CreatePatch(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
+            var result = File.Exists(Path.Combine(_patchFolderLocation, Path.Combine(childFolder, "addFile.txt.add")));
             Assert.AreEqual(true, result);
         }
 
         [Test]
         public void WhenIHaveAnAddFileInPatchFolder_ApplyAddFileIntoExistingFolder()
         {
-            string rootPath = "c:\\patch";
-            string oldFolder = rootPath + "\\old";
-            string newFolder = rootPath + "\\new";
-            string patchFolder = rootPath + "\\patch";
+            ClearFolders(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
+            AddFileToFolder(_patchFolderLocation, "addFile.txt.add");
+            Directory.CreateDirectory(_newFolderLocation);
 
-            ClearFolders(oldFolder, newFolder, patchFolder);
-            AddFileToFolder(patchFolder, "addFile.txt.add");
-            Directory.CreateDirectory(newFolder);
+            KaBlooey.KaBlooeyEngine.ApplyPatch(_patchFolderLocation, _newFolderLocation);
 
-            KaBlooey.KaBlooeyEngine.ApplyPatch(patchFolder, newFolder);
-
-            var result = File.Exists(Path.Combine(newFolder, "addFile.txt"));
+            var result = File.Exists(Path.Combine(_newFolderLocation, "addFile.txt"));
             Assert.AreEqual(true, result);
         }
 
         [Test]
         public void WhenIHaveAnAddFileInAChildPatchFolder_ApplyAddFileIntoNewChildFolder()
         {
-            string rootPath = "c:\\patch";
-            string oldFolder = rootPath + "\\old";
-            string newFolder = rootPath + "\\new";
-            string patchFolder = rootPath + "\\patch";
             string childFolder = "child\\";
 
-            ClearFolders(oldFolder, newFolder, patchFolder);
-            AddFileToFolder(Path.Combine(patchFolder, childFolder), "addFile.txt.add");
-            Directory.CreateDirectory(newFolder);
+            ClearFolders(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
+            AddFileToFolder(Path.Combine(_patchFolderLocation, childFolder), "addFile.txt.add");
+            Directory.CreateDirectory(_newFolderLocation);
 
-            KaBlooey.KaBlooeyEngine.ApplyPatch(patchFolder, newFolder);
+            KaBlooey.KaBlooeyEngine.ApplyPatch(_patchFolderLocation, _newFolderLocation);
 
-            var result = File.Exists(Path.Combine(newFolder, childFolder, "addFile.txt"));
+            var result = File.Exists(Path.Combine(_newFolderLocation, childFolder, "addFile.txt"));
             Assert.AreEqual(true, result);
         }
+    }
 
-        private void AddFileToFolder(string newFolder, string addfileTxt)
+    public class KaBlooeyIntegrationTests
+    {
+        protected readonly string _rootPath = "c:\\patch";
+        protected readonly string _oldFolderLocation;
+        protected string _newFolderLocation;
+        protected string _patchFolderLocation;
+
+        public KaBlooeyIntegrationTests()
+        {
+            _oldFolderLocation = _rootPath + "\\old";
+            _newFolderLocation = _rootPath + "\\new";
+            _patchFolderLocation = _rootPath + "\\patch";
+        }
+
+        protected void AddFileToFolder(string newFolder, string addfileTxt)
         {
             if(!Directory.Exists(newFolder))
             {
@@ -96,7 +93,7 @@ namespace KaBlooey.IntegrationTests
             Assert.IsTrue(File.Exists(filePath));
         }
 
-        private void ClearFolders(string oldFolder, string newFolder, string patchFolder)
+        protected void ClearFolders(string oldFolder, string newFolder, string patchFolder)
         {
             if (Directory.Exists(oldFolder))
             {

@@ -40,6 +40,13 @@ namespace KaBlooey
                     File.Copy(text, Path.Combine(newFolderLocation, Path.GetFileName(text.Replace(".add", ""))));
                 }
             }
+            string[] deletedFiles = Directory.GetFiles(patchFolderLocation, "*.delete");
+            for (int i = 0; i < deletedFiles.Length; i++)
+            {
+                string text = deletedFiles[i];
+                var deletedFileLocation = Path.Combine(newFolderLocation, Path.GetFileName(text.Replace(".delete", "")));
+                File.Delete(deletedFileLocation);
+            }
             Parallel.ForEach<string>(Directory.GetDirectories(patchFolderLocation), delegate(string directory)
             {
                 Trace("Recursing folder:", directory);
@@ -69,11 +76,7 @@ namespace KaBlooey
             //TODO
             foreach (var file in Directory.GetFiles(newFolderLocation))
             {
-                var relativePath = file.Replace(newFolderLocation, "");
-                if (Path.IsPathRooted(relativePath))
-                {
-                    relativePath = relativePath.Remove(0, 1);
-                }
+                var relativePath = GetRelativePath(newFolderLocation, file);
 
                 var oldFolderPath = Path.Combine(oldFolderLocation, relativePath);
                 if (!File.Exists(oldFolderPath))
@@ -87,8 +90,56 @@ namespace KaBlooey
                     File.Copy(file, patchFilePath);
                 }
             }
+
+            MarkFilesAsDeleted(oldFolderLocation, newFolderLocation, patchLocation);
+
             stopwatch.Stop();
             Console.WriteLine("Time Taken = {0} sec", stopwatch.Elapsed.TotalSeconds);
+        }
+
+        private static void MarkFilesAsDeleted(string oldFolderLocation, string newFolderLocation, string patchLocation)
+        {
+            if (Directory.Exists(oldFolderLocation))
+            {
+                foreach (var oldFolderChildPath in Directory.GetDirectories(oldFolderLocation))
+                {
+                    var folderRelativePath = oldFolderChildPath.Replace(oldFolderLocation, string.Empty);
+                    if (Path.IsPathRooted(folderRelativePath))
+                    {
+                        folderRelativePath = folderRelativePath.Remove(0, 1);
+                    }
+                    var newFolderChildPath = Path.Combine(newFolderLocation, folderRelativePath);
+                    var patchFolderChildPath = Path.Combine(patchLocation, folderRelativePath);
+                    MarkFilesAsDeleted(oldFolderChildPath, newFolderChildPath, patchFolderChildPath);
+                }
+                foreach (var file in Directory.GetFiles(oldFolderLocation))
+                {
+                    // find deletable files
+                    var relativePath = GetRelativePath(oldFolderLocation, file);
+                    var newFolderPath = Path.Combine(newFolderLocation, relativePath);
+                    if (!File.Exists(newFolderPath))
+                    {
+                        // file has been deleted. Mark in patch folder as deleted file
+                        var patchFilePath = Path.Combine(patchLocation, relativePath + ".delete");
+                        var patchFolderPath = Path.GetDirectoryName(patchFilePath);
+                        if (!Directory.Exists(patchFolderPath))
+                        {
+                            Directory.CreateDirectory(patchFolderPath);
+                        }
+                        File.Copy(file, patchFilePath);
+                    }
+                }
+            }
+        }
+
+        private static string GetRelativePath(string newFolderLocation, string file)
+        {
+            var relativePath = file.Replace(newFolderLocation, "");
+            if (Path.IsPathRooted(relativePath))
+            {
+                relativePath = relativePath.Remove(0, 1);
+            }
+            return relativePath;
         }
 
         public static void Trace(string format, string param)
