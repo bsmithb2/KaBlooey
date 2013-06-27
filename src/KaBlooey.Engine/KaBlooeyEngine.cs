@@ -24,8 +24,26 @@ namespace KaBlooey
             }
             Parallel.ForEach<string>(Directory.GetFiles(newFolderLocation), delegate(string newFileLocation)
             {
-                //TODO
-                //MagicalVersionChanger.ApplyPatchToFile (patchFolderLocation, newFileLocation);
+                if(newFileLocation.EndsWith(".add") || newFileLocation.EndsWith(".delete") || newFileLocation.EndsWith(".temp")) return;
+                var folderRelativePath = newFileLocation.Replace(newFolderLocation, string.Empty);
+                if (Path.IsPathRooted(folderRelativePath))
+                {
+                    folderRelativePath = folderRelativePath.Remove(0, 1);
+                }
+                var patchFolderChildPath = Path.Combine(patchFolderLocation, folderRelativePath);
+
+                using (FileStream input = new FileStream(newFileLocation, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    using (FileStream output = new FileStream(newFileLocation + ".temp", FileMode.Create))
+                    {
+                        BinaryPatchUtility.Apply(input,
+                                                 () =>
+                                                 new FileStream(patchFolderChildPath + ".changed", FileMode.Open,
+                                                                FileAccess.Read, FileShare.Read), output);
+                    }
+                }
+                File.Copy(newFileLocation + ".temp", newFileLocation, true);
+                File.Delete(newFileLocation + ".temp");
             });
             string[] files = Directory.GetFiles(patchFolderLocation, "*.add");
             for (int i = 0; i < files.Length; i++)

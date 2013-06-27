@@ -30,7 +30,7 @@ namespace KaBlooey.IntegrationTests
             ClearFolders(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
             const string textInFile = "This is some text";
             AddFileToFolderWithText(Path.Combine(_newFolderLocation, childFolder), "addFile.txt", textInFile);
-            AddFileToFolderWithText(Path.Combine(_oldFolderLocation, childFolder), "addFile.txt", textInFile);
+            AddFileToFolderWithText(Path.Combine(_oldFolderLocation, childFolder), "addFile.txt", "oldText");
 
             KaBlooey.KaBlooeyEngine.CreatePatch(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
             var fileLocation = Path.Combine(Path.Combine(_patchFolderLocation, childFolder), "addFile.txt.changed");
@@ -38,7 +38,7 @@ namespace KaBlooey.IntegrationTests
             Assert.AreEqual(true, result);
 
             var fileText = File.ReadAllText(fileLocation);
-            Assert.AreEqual(128, fileText.Length);
+            Assert.AreEqual(139, fileText.Length);
         }
         
         [Test]
@@ -48,7 +48,7 @@ namespace KaBlooey.IntegrationTests
             ClearFolders(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
             const string textInFile = "This is some text";
             AddFileToFolderWithText(Path.Combine(_newFolderLocation, childFolder), "addFile.txt", textInFile);
-            AddFileToFolderWithText(Path.Combine(_oldFolderLocation, childFolder), "addFile.txt", textInFile);
+            AddFileToFolderWithText(Path.Combine(_oldFolderLocation, childFolder), "addFile.txt", "old text");
 
             KaBlooey.KaBlooeyEngine.CreatePatch(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
             var fileLocation = Path.Combine(Path.Combine(_patchFolderLocation, childFolder), "addFile.txt.changed");
@@ -56,7 +56,7 @@ namespace KaBlooey.IntegrationTests
             Assert.AreEqual(true, result);
 
             var fileText = File.ReadAllText(fileLocation);
-            Assert.AreEqual(128, fileText.Length);
+            Assert.AreEqual(139, fileText.Length);
             KaBlooey.KaBlooeyEngine.ApplyPatch(_patchFolderLocation, _oldFolderLocation);
             var oldfileLocation = Path.Combine(_oldFolderLocation, childFolder, "addFile.txt");
             var oldFileresult = File.Exists(oldfileLocation);

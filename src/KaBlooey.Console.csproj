@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -29,11 +29,26 @@
     <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BrightSword.SwissKnife">
+      <HintPath>..\packages\BrightSword.SwissKnife.1.0.20\lib\net40\BrightSword.SwissKnife.dll</HintPath>
+    </Reference>
+    <Reference Include="Library.BrightSword.CommandLineUtilities">
+      <HintPath>..\packages\BrightSword.CommandLineUtilities.1.0.0\lib\Library.BrightSword.CommandLineUtilities.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="KaBlooey.Engine\KaBlooey.Engine.csproj">
+      <Project>{E0BE44AF-93D7-47AC-ABB9-6723427D3345}</Project>
+      <Name>KaBlooey.Engine</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
