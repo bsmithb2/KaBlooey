@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using BrightSword.CommandLineUtilities;
 using BrightSword.SwissKnife;
+using KaBlooey.Engine;
 
 namespace KaBlooey.Console
 {
@@ -18,11 +19,11 @@ namespace KaBlooey.Console
 		    System.Console.ReadLine();
             if(apply)
             {
-                KaBlooey.KaBlooeyEngine.ApplyPatch(patchFolderLocation, oldFolderLocation);
+                KaBlooeyEngine.ApplyPatch(patchFolderLocation, oldFolderLocation);
             }
             else
             {
-                KaBlooey.KaBlooeyEngine.CreatePatch(oldFolderLocation, newFolderLocation, patchFolderLocation);
+                KaBlooeyEngine.CreatePatch(oldFolderLocation, newFolderLocation, patchFolderLocation);
             }
 
 		}

@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using BsDiff;
 
-namespace KaBlooey
+namespace KaBlooey.Engine
 {
     /// <summary>
     /// KaBlooey - A patching engine for files and folders, using BSDIFF to create patches of directories.
@@ -22,7 +22,7 @@ namespace KaBlooey
             {
                 Directory.CreateDirectory(newFolderLocation);
             }
-            Parallel.ForEach<string>(Directory.GetFiles(newFolderLocation), delegate(string newFileLocation)
+            Parallel.ForEach(Directory.GetFiles(newFolderLocation), delegate(string newFileLocation)
             {
                 if(newFileLocation.EndsWith(".add") || newFileLocation.EndsWith(".delete") || newFileLocation.EndsWith(".temp")) return;
                 var folderRelativePath = newFileLocation.Replace(newFolderLocation, string.Empty);
@@ -58,7 +58,7 @@ namespace KaBlooey
                 if (File.Exists(text))
                 {
                     Trace("Adding File:", text);
-                    //var newFileLocation = Path.GetDirectoryName(newFolderLocation);
+                    
                     if (!Directory.Exists(newFolderLocation))
                     {
                         Directory.CreateDirectory(newFolderLocation);
@@ -73,7 +73,7 @@ namespace KaBlooey
                 var deletedFileLocation = Path.Combine(newFolderLocation, Path.GetFileName(text.Replace(".delete", "")));
                 File.Delete(deletedFileLocation);
             }
-            Parallel.ForEach<string>(Directory.GetDirectories(patchFolderLocation), delegate(string directory)
+            Parallel.ForEach(Directory.GetDirectories(patchFolderLocation), delegate(string directory)
             {
                 Trace("Recursing folder:", directory);
                 string str = directory.Replace(patchFolderLocation, string.Empty);

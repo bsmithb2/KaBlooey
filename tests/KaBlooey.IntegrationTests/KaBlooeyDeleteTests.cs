@@ -1,4 +1,5 @@
 using System.IO;
+using KaBlooey.Engine;
 using NUnit.Framework;
 
 namespace KaBlooey.IntegrationTests
@@ -13,7 +14,7 @@ namespace KaBlooey.IntegrationTests
             AddFileToFolder(_oldFolderLocation, "addFile.txt");
             Directory.CreateDirectory(_newFolderLocation);
 
-            KaBlooey.KaBlooeyEngine.CreatePatch(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
+            KaBlooeyEngine.CreatePatch(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
             var result = File.Exists(Path.Combine(_patchFolderLocation, "addFile.txt.delete"));
             Assert.AreEqual(true, result);
         }
@@ -26,7 +27,7 @@ namespace KaBlooey.IntegrationTests
             AddFileToFolder(Path.Combine(_oldFolderLocation, childFolder), "addFile.txt");
             Directory.CreateDirectory(_newFolderLocation);
 
-            KaBlooey.KaBlooeyEngine.CreatePatch(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
+            KaBlooeyEngine.CreatePatch(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
             var result = File.Exists(Path.Combine(_patchFolderLocation, childFolder, "addFile.txt.delete"));
             Assert.AreEqual(true, result);
         }
@@ -40,7 +41,7 @@ namespace KaBlooey.IntegrationTests
 
             Directory.CreateDirectory(_newFolderLocation);
 
-            KaBlooey.KaBlooeyEngine.ApplyPatch(_patchFolderLocation, _newFolderLocation);
+            KaBlooeyEngine.ApplyPatch(_patchFolderLocation, _newFolderLocation);
             var result = File.Exists(Path.Combine(_newFolderLocation, "addFile.txt"));
             Assert.AreEqual(false, result);
 
