@@ -30,12 +30,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BrightSword.SwissKnife">
-      <HintPath>..\packages\BrightSword.SwissKnife.1.0.20\lib\net40\BrightSword.SwissKnife.dll</HintPath>
+      <HintPath>..\packages\BrightSword.SwissKnife.1.0.22\lib\net40\BrightSword.SwissKnife.dll</HintPath>
     </Reference>
     <Reference Include="Library.BrightSword.CommandLineUtilities">
       <HintPath>..\packages\BrightSword.CommandLineUtilities.1.0.0\lib\Library.BrightSword.CommandLineUtilities.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />

@@ -31,19 +31,25 @@ namespace KaBlooey
                     folderRelativePath = folderRelativePath.Remove(0, 1);
                 }
                 var patchFolderChildPath = Path.Combine(patchFolderLocation, folderRelativePath);
-
-                using (FileStream input = new FileStream(newFileLocation, FileMode.Open, FileAccess.Read, FileShare.Read))
+                var patchFile = patchFolderChildPath + ".changed";
+                if (File.Exists(patchFile))
                 {
-                    using (FileStream output = new FileStream(newFileLocation + ".temp", FileMode.Create))
+                    using (
+                        FileStream input = new FileStream(newFileLocation, FileMode.Open, FileAccess.Read,
+                                                          FileShare.Read))
                     {
-                        BinaryPatchUtility.Apply(input,
-                                                 () =>
-                                                 new FileStream(patchFolderChildPath + ".changed", FileMode.Open,
-                                                                FileAccess.Read, FileShare.Read), output);
+                        using (FileStream output = new FileStream(newFileLocation + ".temp", FileMode.Create))
+                        {
+                            BinaryPatchUtility.Apply(input,
+                                                     () =>
+                                                     new FileStream(patchFolderChildPath + ".changed", FileMode.Open,
+                                                                    FileAccess.Read, FileShare.Read), output);
+                        }
                     }
+
+                    File.Copy(newFileLocation + ".temp", newFileLocation, true);
+                    File.Delete(newFileLocation + ".temp");
                 }
-                File.Copy(newFileLocation + ".temp", newFileLocation, true);
-                File.Delete(newFileLocation + ".temp");
             });
             string[] files = Directory.GetFiles(patchFolderLocation, "*.add");
             for (int i = 0; i < files.Length; i++)

@@ -11,10 +11,10 @@ namespace KaBlooey.Console
 	{
 		public static void Main (string[] args)
 		{
-		    var apply = args.GetArg<bool>("apply", _ => Boolean.Parse(_));
-		    var oldFolderLocation = args.GetArg("oldFolder", _ => _);
-            var newFolderLocation = args.GetArg("newFolder", _ => _);
-            var patchFolderLocation = args.GetArg("patchFolder", _ => _);
+		    var apply = args.GetArgumentValue<bool>("apply", _ => Boolean.Parse(_));
+            var oldFolderLocation = args.GetArgumentValue("oldFolder", _ => _);
+            var newFolderLocation = args.GetArgumentValue("newFolder", _ => _);
+            var patchFolderLocation = args.GetArgumentValue("patchFolder", _ => _);
 		    System.Console.ReadLine();
             if(apply)
             {
