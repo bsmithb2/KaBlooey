@@ -28,7 +28,7 @@ namespace KaBlooey.IntegrationTests
         public void WhenIAddAFileToAChildFolder_FileShouldBeAddedToPatchChildFolderWithAddExtension()
         {
             string childFolder = "child\\";
-            
+
             ClearFolders(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
             AddFileToFolder(Path.Combine(_newFolderLocation, childFolder), "addFile.txt");
             Directory.CreateDirectory(_oldFolderLocation);
@@ -66,3 +66,4 @@ namespace KaBlooey.IntegrationTests
         }
     }
 }
+

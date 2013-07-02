@@ -46,5 +46,30 @@ namespace KaBlooey.IntegrationTests
             Assert.AreEqual(false, result);
 
         }
+
+        [Test]
+        public void WhenIHaveFilesInMultipleFolders_TheyBothShouldDeleteOnce()
+        {
+            ClearFolders(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
+            AddFileToFolder(_oldFolderLocation, "delete.txt");
+            AddFileToFolder(_oldFolderLocation, "change.txt");
+            AddFileToFolder(_newFolderLocation, "change.txt");
+            AddFileToFolder(_newFolderLocation, "add.txt");
+            Directory.CreateDirectory(Path.Combine(_oldFolderLocation, "patchsubfolder"));
+            AddFileToFolder(_oldFolderLocation, "patchsubfolder\\subfolderFile.txt");
+            Directory.CreateDirectory(Path.Combine(_newFolderLocation, "patchsubfolder"));
+            AddFileToFolder(_oldFolderLocation, "patchsubfolder\\change.txt");
+            AddFileToFolder(_newFolderLocation, "patchsubfolder\\change.txt");
+            AddFileToFolder(_newFolderLocation, "patchsubfolder\\add.txt");
+            
+            Directory.CreateDirectory(_newFolderLocation);
+
+            KaBlooeyEngine.CreatePatch(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
+            var result = File.Exists(Path.Combine(_patchFolderLocation, "delete.txt.delete"));
+            Assert.AreEqual(true, result);
+
+            result = File.Exists(Path.Combine(_patchFolderLocation, "patchsubfolder\\subfolderFile.txt.delete"));
+            Assert.AreEqual(true, result);
+        }
     }
 }
