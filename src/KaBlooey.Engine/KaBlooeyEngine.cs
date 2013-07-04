@@ -22,8 +22,9 @@ namespace KaBlooey.Engine
             {
                 _hash =
                     ChangeFileHashDetails.DeserializeListFromFile(patchFolderLocation + "\\_changedFileList.hashstore");
-                var files = Directory.GetFiles(patchFolderLocation, "*.*", SearchOption.AllDirectories);
-                if (_hash.Count != files.Length - 1)
+                var files = Directory.GetFiles(patchFolderLocation, "*.changed", SearchOption.AllDirectories);
+                files = files.Where(s => !s.Contains(".hashstore")).ToArray();
+                if (_hash.Count != files.Length)
                 {
                     throw new InvalidOperationException("Incorrect number of patch files to hashes");
                 }
@@ -41,6 +42,31 @@ namespace KaBlooey.Engine
                 if (foundFilesInHash != _hash.Count)
                 {
                     throw new InvalidOperationException("Didn't find every file in the hash file");
+                }
+                //check patch files
+                foreach (var file in files)
+                {
+                    var hash = FileComputeHasher.ComputeHashFromFile(file);
+                    var relativePath = file.Replace(patchFolderLocation, "");
+                    if (
+                        _hash.FirstOrDefault(s => s._patchHash == hash && s._relativePatchFileLocation == relativePath) ==
+                        null)
+                    {
+                        throw new InvalidOperationException("Hash doesn't match for existing file");
+                    }
+                }
+
+                // check apply files
+                foreach (var file in Directory.GetFiles(applyLocation, "*.*", SearchOption.AllDirectories))
+                {
+                    var hash = FileComputeHasher.ComputeHashFromFile(file);
+                    var relativePath = file.Replace(applyLocation, "");
+                    if (
+                        _hash.FirstOrDefault(s => s._oldFileHash == hash && s._relativeOldFileLocation == relativePath) ==
+                        null)
+                    {
+                        throw new InvalidOperationException("Hash doesn't match for existing file");
+                    }
                 }
             }
             ApplyPatchImpl(patchFolderLocation, applyLocation);
@@ -278,7 +304,7 @@ namespace KaBlooey.Engine
             return patchFolderLocation;
         }
 
-        public static void ApplyPatchFromZip(string applyLocation, string patchFileLocation)
+        public static void ApplyPatchFromZip(string applyLocation, string patchFileLocation, bool ignoreMD5 = false)
         {
             if (!File.Exists(patchFileLocation))
             {
@@ -294,7 +320,8 @@ namespace KaBlooey.Engine
                 file.ExtractAll(tempPatchPath);
             }
 
-            ApplyPatch(tempPatchPath, applyLocation);
+            ApplyPatch(tempPatchPath, applyLocation, ignoreMD5
+                );
         }
 
         public static List<ChangeFileHashDetails> GetHashSummary()

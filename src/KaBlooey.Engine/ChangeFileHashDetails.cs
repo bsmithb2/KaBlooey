@@ -18,13 +18,16 @@ namespace KaBlooey.Engine
         public string _relativeNewFileLocation;
         public string _relativeOldFileLocation;
         public string _relativePatchFileLocation;
+        private readonly FileComputeHasher _fileComputeHasher;
 
         public ChangeFileHashDetails()
         {
+            _fileComputeHasher = new FileComputeHasher();
         }
 
         public ChangeFileHashDetails(string patchFilePath, string oldFilePath, string newFilePath, string rootNewFolderLocation, string rootOldFolderlocation, string rootPatchFolderLocation)
         {
+            _fileComputeHasher = new FileComputeHasher();
             _patchFilePath = patchFilePath;
             _oldFilePath = oldFilePath;
             _newFilePath = newFilePath;
@@ -36,15 +39,9 @@ namespace KaBlooey.Engine
 
         private void ComputeHashes()
         {
-            _patchHash = ComputeHashFromFile(_patchFilePath);
-            _oldFileHash = ComputeHashFromFile(_oldFilePath);
-            _newFileHash = ComputeHashFromFile(_newFilePath);
-        }
-
-        private string ComputeHashFromFile(string fileName)
-        {
-            byte[] hash = MD5.Create().ComputeHash(File.ReadAllBytes(fileName));
-            return BitConverter.ToString(hash);
+            _patchHash = FileComputeHasher.ComputeHashFromFile(_patchFilePath);
+            _oldFileHash = FileComputeHasher.ComputeHashFromFile(_oldFilePath);
+            _newFileHash = FileComputeHasher.ComputeHashFromFile(_newFilePath);
         }
 
         public static void SerializeListToFile(List<ChangeFileHashDetails> list, string fileName)

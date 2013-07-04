@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="BinaryPatchUtility.cs" />
     <Compile Include="ChangeFileHashDetails.cs" />
+    <Compile Include="FileComputeHasher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="KaBlooeyEngine.cs" />
   </ItemGroup>

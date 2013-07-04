@@ -35,7 +35,7 @@ namespace KaBlooey.IntegrationTests
             Directory.CreateDirectory(_oldFolderLocation);
             var patchFileLocation = _patchFolderLocation + "\\patch.zip";
             KaBlooeyEngine.CreatePatchIntoZip(_oldFolderLocation, _newFolderLocation, patchFileLocation);
-            KaBlooeyEngine.ApplyPatchFromZip(_oldFolderLocation, patchFileLocation);
+            KaBlooeyEngine.ApplyPatchFromZip(_oldFolderLocation, patchFileLocation, true);
 
             Assert.IsTrue(File.Exists(Path.Combine(_oldFolderLocation, "addFile.txt")));
         }
