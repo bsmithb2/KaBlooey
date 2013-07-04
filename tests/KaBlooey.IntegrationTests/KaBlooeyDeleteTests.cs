@@ -41,7 +41,7 @@ namespace KaBlooey.IntegrationTests
 
             Directory.CreateDirectory(_newFolderLocation);
 
-            KaBlooeyEngine.ApplyPatch(_patchFolderLocation, _newFolderLocation);
+            KaBlooeyEngine.ApplyPatch(_patchFolderLocation, _newFolderLocation, true);
             var result = File.Exists(Path.Combine(_newFolderLocation, "addFile.txt"));
             Assert.AreEqual(false, result);
 

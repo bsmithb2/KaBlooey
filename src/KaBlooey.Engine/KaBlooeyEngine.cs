@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using BsDiff;
@@ -14,10 +15,34 @@ namespace KaBlooey.Engine
     /// </summary>
     public class KaBlooeyEngine
     {
-        public static void ApplyPatch(string patchFolderLocation, string applyLocation)
+        public static void ApplyPatch(string patchFolderLocation, string applyLocation, bool ignoreMD5 = false)
         {
             _hash.Clear();
-            //_hash = ChangeFileHashDetails.DeserializeListFromFile(patchFolderLocation + "\\_changedFileList.hashstore");
+            if (!ignoreMD5)
+            {
+                _hash =
+                    ChangeFileHashDetails.DeserializeListFromFile(patchFolderLocation + "\\_changedFileList.hashstore");
+                var files = Directory.GetFiles(patchFolderLocation, "*.*", SearchOption.AllDirectories);
+                if (_hash.Count != files.Length - 1)
+                {
+                    throw new InvalidOperationException("Incorrect number of patch files to hashes");
+                }
+                var foundFilesInHash = 0;
+                foreach (var file in files)
+                {
+                    var relativePath = file.Replace(patchFolderLocation, "");
+                    var validHashForFile = _hash.FirstOrDefault(s => relativePath == s._relativePatchFileLocation);
+                    if (validHashForFile == null)
+                    {
+                        throw new InvalidOperationException("Couldn't Find Valid Hash");
+                    }
+                    foundFilesInHash++;
+                }
+                if (foundFilesInHash != _hash.Count)
+                {
+                    throw new InvalidOperationException("Didn't find every file in the hash file");
+                }
+            }
             ApplyPatchImpl(patchFolderLocation, applyLocation);
         }
 

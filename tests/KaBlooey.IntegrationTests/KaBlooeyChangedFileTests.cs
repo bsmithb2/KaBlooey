@@ -96,9 +96,6 @@ namespace KaBlooey.IntegrationTests
         }
 
         [Test]
-        [Category("broken")]
-        [Ignore]
-        //[ExpectedException(typeof(InvalidOperationException))]
         public void WhenIChangeAFileInTheNewDirectoryAndProduceADiffAndHackTheMD5_ThenTheDeltasShouldNotBeApplied_UnSerialisable()
         {
             #region HasFileText
@@ -109,7 +106,7 @@ namespace KaBlooey.IntegrationTests
             ClearFolders(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
             const string textInFile = "This is some text";
             AddFileToFolderWithText(_newFolderLocation, "addFile.txt", textInFile);
-            AddFileToFolderWithText(_oldFolderLocation, "addFile.txt", textInFile);
+            AddFileToFolderWithText(_oldFolderLocation, "addFile.txt", "old text");
 
             KaBlooeyEngine.CreatePatch(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
             var fileLocation = Path.Combine(_patchFolderLocation, "addFile.txt.changed");
@@ -117,31 +114,74 @@ namespace KaBlooey.IntegrationTests
             Assert.AreEqual(true, result);
 
             var fileText = File.ReadAllText(fileLocation);
-            Assert.AreEqual(128, fileText.Length);
+            Assert.AreEqual(139, fileText.Length);
             
             var hashFileLocation = _patchFolderLocation + "\\_changedFileList.hashstore";
             Assert.IsTrue(File.Exists(hashFileLocation), hashFileLocation);
             File.Delete(hashFileLocation);
             File.WriteAllText(hashFileLocation, hashFileText);
 
-            KaBlooeyEngine.ApplyPatch(_patchFolderLocation, _oldFolderLocation);
+            Assert.Throws(typeof(InvalidOperationException), () => KaBlooeyEngine.ApplyPatch(_patchFolderLocation, _oldFolderLocation));
+
+            Assert.AreEqual("old text", File.ReadAllText(_oldFolderLocation + "\\addFile.txt"));
         }
 
         [Test]
-        public void WhenIChangeAFileInTheNewDirectoryAndProduceADiffAndHackTheMD5_ThenTheDeltasShouldNotBeApplied_IncorrectHashValue()
+        public void WhenIChangeAFileInTheNewDirectoryAndProduceADiffAndHackTheMD5_ThenTheDeltasShouldNotBeApplied_HackedHash_WrongNumber()
         {
             #region HasFileText
 
             const string hashFileText = @"<?xml version=""1.0""?>
 <ArrayOfChangeFileHashDetails xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <ChangeFileHashDetails>
-    <_patchHash>91-A1-A8-46-38-8E-E0-14-EE-9E-1D-FB-3C-3A-58-57 wrong hash</_patchHash>
+    <_patchHash>91-A1-A8-46-38-8E-E0-14-EE-9E-1D-FB-3C-3A-58-57</_patchHash>
     <_oldFileHash>D4-1D-8C-D9-8F-00-B2-04-E9-80-09-98-EC-F8-42-7E</_oldFileHash>
     <_newFileHash>D4-1D-8C-D9-8F-00-B2-04-E9-80-09-98-EC-F8-42-7E</_newFileHash>
     <_relativeNewFileLocation>\patchsubfolder\change.txt</_relativeNewFileLocation>
     <_relativeOldFileLocation>\patchsubfolder\change.txt</_relativeOldFileLocation>
     <_relativePatchFileLocation>\patchsubfolder\change.txt.changed</_relativePatchFileLocation>
   </ChangeFileHashDetails>
+  <ChangeFileHashDetails>
+    <_patchHash>91-A1-A8-46-38-8E-E0-14-EE-9E-1D-FB-3C-3A-58-57</_patchHash>
+    <_oldFileHash>D4-1D-8C-D9-8F-00-B2-04-E9-80-09-98-EC-F8-42-7E</_oldFileHash>
+    <_newFileHash>D4-1D-8C-D9-8F-00-B2-04-E9-80-09-98-EC-F8-42-7E</_newFileHash>
+    <_relativeNewFileLocation>\change.txt</_relativeNewFileLocation>
+    <_relativeOldFileLocation>\change.txt</_relativeOldFileLocation>
+    <_relativePatchFileLocation>\change.txt.changed</_relativePatchFileLocation>
+  </ChangeFileHashDetails>
+</ArrayOfChangeFileHashDetails>";
+
+            #endregion
+            ClearFolders(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
+            const string textInFile = "This is some text";
+            AddFileToFolderWithText(_newFolderLocation, "addFile.txt", textInFile);
+            AddFileToFolderWithText(_oldFolderLocation, "addFile.txt", "old text");
+
+            KaBlooeyEngine.CreatePatch(_oldFolderLocation, _newFolderLocation, _patchFolderLocation);
+            var fileLocation = Path.Combine(_patchFolderLocation, "addFile.txt.changed");
+            var result = File.Exists(fileLocation);
+            Assert.AreEqual(true, result);
+
+            var fileText = File.ReadAllText(fileLocation);
+            Assert.AreEqual(139, fileText.Length);
+
+            var hashFileLocation = _patchFolderLocation + "\\_changedFileList.hashstore";
+            Assert.IsTrue(File.Exists(hashFileLocation), hashFileLocation);
+            File.Delete(hashFileLocation);
+            File.WriteAllText(hashFileLocation, hashFileText);
+
+            Assert.Throws(typeof(InvalidOperationException), () => KaBlooeyEngine.ApplyPatch(_patchFolderLocation, _oldFolderLocation));
+
+            Assert.AreEqual("old text", File.ReadAllText(_oldFolderLocation + "\\addFile.txt"));
+        }
+
+        [Test]
+        public void WhenIChangeAFileInTheNewDirectoryAndProduceADiffAndHackTheMD5_ThenTheDeltasShouldNotBeApplied_WrongFileNameForPatch()
+        {
+            #region HasFileText
+
+            const string hashFileText = @"<?xml version=""1.0""?>
+<ArrayOfChangeFileHashDetails xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <ChangeFileHashDetails>
     <_patchHash>91-A1-A8-46-38-8E-E0-14-EE-9E-1D-FB-3C-3A-58-57</_patchHash>
     <_oldFileHash>D4-1D-8C-D9-8F-00-B2-04-E9-80-09-98-EC-F8-42-7E</_oldFileHash>
@@ -170,7 +210,7 @@ namespace KaBlooey.IntegrationTests
             File.Delete(hashFileLocation);
             File.WriteAllText(hashFileLocation, hashFileText);
 
-            KaBlooeyEngine.ApplyPatch(_patchFolderLocation, _oldFolderLocation);
+            Assert.Throws(typeof(InvalidOperationException), () => KaBlooeyEngine.ApplyPatch(_patchFolderLocation, _oldFolderLocation));
         }
 
         [Test]
@@ -196,8 +236,6 @@ namespace KaBlooey.IntegrationTests
             Assert.AreEqual("\\addFile.txt", list.First()._relativeOldFileLocation);
             Assert.AreEqual("\\addFile.txt.changed", list.First()._relativePatchFileLocation);
         }
-
-        [Test]
 
         private void AddFileToFolderWithText(string folderLocation, string addfileTxt, string text)
         {
