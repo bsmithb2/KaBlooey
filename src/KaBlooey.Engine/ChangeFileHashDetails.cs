@@ -51,6 +51,7 @@ namespace KaBlooey.Engine
             {
                 serializer.Serialize(stream, list);
             }
+            File.Copy(fileName, "d:\\filestore.xml", true);
         }
 
         public static List<ChangeFileHashDetails> DeserializeListFromFile(string hashFileLocation)

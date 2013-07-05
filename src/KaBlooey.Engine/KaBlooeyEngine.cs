@@ -26,7 +26,7 @@ namespace KaBlooey.Engine
                 files = files.Where(s => !s.Contains(".hashstore")).ToArray();
                 if (_hash.Count != files.Length)
                 {
-                    throw new InvalidOperationException("Incorrect number of patch files to hashes");
+                    //throw new InvalidOperationException("Incorrect number of patch files to hashes");
                 }
                 var foundFilesInHash = 0;
                 foreach (var file in files)
@@ -35,7 +35,7 @@ namespace KaBlooey.Engine
                     var validHashForFile = _hash.FirstOrDefault(s => relativePath == s._relativePatchFileLocation);
                     if (validHashForFile == null)
                     {
-                        throw new InvalidOperationException("Couldn't Find Valid Hash");
+                        throw new InvalidOperationException("Couldn't Find Valid Hash" + relativePath);
                     }
                     foundFilesInHash++;
                 }
@@ -46,13 +46,14 @@ namespace KaBlooey.Engine
                 //check patch files
                 foreach (var file in files)
                 {
+                    Trace(file, "");
                     var hash = FileComputeHasher.ComputeHashFromFile(file);
                     var relativePath = file.Replace(patchFolderLocation, "");
                     if (
                         _hash.FirstOrDefault(s => s._patchHash == hash && s._relativePatchFileLocation == relativePath) ==
                         null)
                     {
-                        throw new InvalidOperationException("Hash doesn't match for existing file");
+                        throw new InvalidOperationException("Hash doesn't match for existing patch file" + relativePath);
                     }
                 }
 
@@ -60,12 +61,15 @@ namespace KaBlooey.Engine
                 foreach (var file in Directory.GetFiles(applyLocation, "*.*", SearchOption.AllDirectories))
                 {
                     var hash = FileComputeHasher.ComputeHashFromFile(file);
+                    
                     var relativePath = file.Replace(applyLocation, "");
+                    if (_hash.FirstOrDefault(s => s._relativeOldFileLocation == relativePath) == null) continue;
+                     
                     if (
                         _hash.FirstOrDefault(s => s._oldFileHash == hash && s._relativeOldFileLocation == relativePath) ==
                         null)
                     {
-                        throw new InvalidOperationException("Hash doesn't match for existing file");
+                        throw new InvalidOperationException(string.Format("Hash doesn't match for existing apply file {0} old Hash = {1} new hash = {2}", file, hash, _hash.First(s=> s._relativeOldFileLocation == relativePath)._oldFileHash));
                     }
                 }
             }
@@ -201,9 +205,15 @@ namespace KaBlooey.Engine
                     else
                     {
                         // file exists - take a diff
+                        
                         using (FileStream output = new FileStream(patchFilePath + ".changed", FileMode.Create))
                             BinaryPatchUtility.Create(File.ReadAllBytes(oldFolderPath), File.ReadAllBytes(file), output);
-                        _hash.Add(new ChangeFileHashDetails(patchFilePath + ".changed", oldFolderPath, file, _rootNewFolderLocation, _rootOldFolderlocation, _rootPatchFolderLocation));
+                        lock (_lock)
+                        {
+                            _hash.Add(new ChangeFileHashDetails(patchFilePath + ".changed", oldFolderPath, file,
+                                                                _rootNewFolderLocation, _rootOldFolderlocation,
+                                                                _rootPatchFolderLocation));
+                        }
                     }
                 });
 
@@ -212,7 +222,7 @@ namespace KaBlooey.Engine
             stopwatch.Stop();
             Console.WriteLine("Time Taken = {0} sec", stopwatch.Elapsed.TotalSeconds);
         }
-
+        private static object _lock = new object();
         private static void MarkFilesAsDeleted(string oldFolderLocation, string newFolderLocation, string patchLocation)
         {
             if (Directory.Exists(oldFolderLocation))
